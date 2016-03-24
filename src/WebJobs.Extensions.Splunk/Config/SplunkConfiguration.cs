@@ -78,16 +78,11 @@ namespace WebJobs.Extensions.Splunks
 
         internal static string GetSettingFromConfigOrEnvironment(string key)
         {
-            string value = null;
+            var value = ConfigurationManager.AppSettings[key];
 
             if (string.IsNullOrEmpty(value))
             {
-                value = ConfigurationManager.AppSettings[key];
-
-                if (string.IsNullOrEmpty(value))
-                {
-                    value = Environment.GetEnvironmentVariable(key);
-                }
+                value = Environment.GetEnvironmentVariable(key);
             }
 
             return value;
