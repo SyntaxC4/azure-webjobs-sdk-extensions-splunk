@@ -16,26 +16,12 @@ namespace WebJobs.Extensions.Splunk
     {
         private readonly IConverterManager _converterManager;
         private readonly SplunkConfiguration _config;
+        private ISplunkEventService _eventService;
 
         public SplunkAttributeBindingProvider(IConverterManager converterManager, SplunkConfiguration config)
         {
             _converterManager = converterManager;
             _config = config;
-        }
-
-        public Task<IBinding> TryCreateAsync(BindingProviderContext context)
-        {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context");
-            }
-
-            ParameterInfo parameter = context.Parameter;
-            var attribute = parameter.GetCustomAttribute<SplunkAttribute>(inherit: false);
-            if (attribute == null)
-            {
-                return Task.FromResult<IBinding>(null);
-            }
 
             if (_config.HecHost == null)
             {
@@ -53,8 +39,24 @@ namespace WebJobs.Extensions.Splunk
                         SplunkConfiguration.SplunkTokenSettingName));
             }
 
-            var service = new SplunkEventService(_config.HecHost, _config.Token);
-            Func<string, ISplunkEventService> invokeStringBinder = (invokeString) => service;
+            _eventService = new SplunkEventService(_config.HecHost, _config.Token);
+        }
+
+        public Task<IBinding> TryCreateAsync(BindingProviderContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException("context");
+            }
+
+            ParameterInfo parameter = context.Parameter;
+            var attribute = parameter.GetCustomAttribute<SplunkAttribute>(inherit: false);
+            if (attribute == null)
+            {
+                return Task.FromResult<IBinding>(null);
+            }
+
+            Func<string, ISplunkEventService> invokeStringBinder = (invokeString) => _eventService;
     
             var binding = BindingFactory.BindCollector(
                 parameter,
