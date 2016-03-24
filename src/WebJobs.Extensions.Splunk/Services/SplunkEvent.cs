@@ -23,6 +23,7 @@ namespace WebJobs.Extensions.Splunk.Services
             }
         }
 
+        //can be a string an object which is serializable by JSON.NET.
         [JsonProperty("event", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public object Event { get; set; }
 
