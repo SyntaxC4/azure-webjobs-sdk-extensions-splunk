@@ -39,7 +39,7 @@ namespace WebJobs.Extensions.Splunk
                         SplunkConfiguration.SplunkTokenSettingName));
             }
 
-            _eventService = new SplunkEventService(_config.HecHost, _config.Token);
+            _eventService = new SplunkEventService(_config);
         }
 
         public Task<IBinding> TryCreateAsync(BindingProviderContext context)

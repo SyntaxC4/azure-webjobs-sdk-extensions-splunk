@@ -7,24 +7,32 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using WebJobs.Extensions.Splunks;
 
 namespace WebJobs.Extensions.Splunk.Services
 {
     internal class SplunkEventService : ISplunkEventService
     {
+        private readonly SplunkConfiguration _config;
         private readonly Uri _host;
         private readonly Guid _token;
         private HttpClient _client;
 
-        public SplunkEventService(Uri host, Guid token)
+        public SplunkEventService(SplunkConfiguration config)
         {
-            _host = new Uri(host, "services/collector/event");
-            _token = token;
+            _config = config;
+            _host = new Uri(config.HecHost, "services/collector/event");
+            _token = config.Token;
         }
 
         public async Task<HttpResponseMessage> SendEventAsync(SplunkEvent splunkEvent)
         {
             var json = JsonConvert.SerializeObject(splunkEvent);
+            splunkEvent.Host = splunkEvent.Host ?? _config.Host;
+            splunkEvent.Source = splunkEvent.Source ?? _config.Source;
+            splunkEvent.SourceType = splunkEvent.SourceType ?? _config.SourceType;
+            splunkEvent.Index = splunkEvent.Index ?? _config.Index;
+
             return await GetHttpClient().PostAsync(_host, new StringContent(json));
         }
 
