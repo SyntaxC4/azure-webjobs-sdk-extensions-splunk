@@ -27,12 +27,11 @@ namespace WebJobs.Extensions.Splunk.Services
 
         public async Task<HttpResponseMessage> SendEventAsync(SplunkEvent splunkEvent)
         {
-            var json = JsonConvert.SerializeObject(splunkEvent);
             splunkEvent.Host = splunkEvent.Host ?? _config.Host;
             splunkEvent.Source = splunkEvent.Source ?? _config.Source;
             splunkEvent.SourceType = splunkEvent.SourceType ?? _config.SourceType;
             splunkEvent.Index = splunkEvent.Index ?? _config.Index;
-
+            var json = JsonConvert.SerializeObject(splunkEvent);
             return await GetHttpClient().PostAsync(_host, new StringContent(json));
         }
 
