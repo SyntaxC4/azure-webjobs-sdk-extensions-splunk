@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using WebJobs.Extensions.Splunk.Services;
-using WebJobs.Extensions.Splunks;
 
 namespace WebJobs.Extensions.Splunk
 {

@@ -13,7 +13,6 @@ namespace WebJobs.Extensions.Splunk.Services
         [JsonIgnore]
         public DateTime Timestamp { get; set; }
 
-        [JsonProperty("time", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public double Time
         {
             get
@@ -23,20 +22,15 @@ namespace WebJobs.Extensions.Splunk.Services
             }
         }
 
-        //can be a string an object which is serializable by JSON.NET.
-        [JsonProperty("event", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        //can be a string, or an object which is serializable by JSON.NET.
         public object Event { get; set; }
 
-        [JsonProperty("host", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Host { get; set; }
 
-        [JsonProperty("source", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Source { get; set; }
 
-        [JsonProperty("sourcetype", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string SourceType { get; set; }
 
-        [JsonProperty("index", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Index { get; set; }
     }
 }

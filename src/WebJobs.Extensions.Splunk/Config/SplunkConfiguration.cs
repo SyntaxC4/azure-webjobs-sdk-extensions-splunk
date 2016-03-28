@@ -6,8 +6,9 @@ using System.Configuration;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host.Config;
 using WebJobs.Extensions.Splunk;
+using WebJobs.Extensions.Splunk.Services;
 
-namespace WebJobs.Extensions.Splunks
+namespace WebJobs.Extensions.Splunk
 {
     /// <summary>
     /// Defines the configuration options for the Splunk binding.
@@ -26,8 +27,10 @@ namespace WebJobs.Extensions.Splunks
         /// </summary>
         public SplunkConfiguration()
         {
-            HecHost = new Uri(GetSettingFromConfigOrEnvironment(SplunkHecHostSettingName));
-            Token = new Guid(GetSettingFromConfigOrEnvironment(SplunkTokenSettingName));
+            var host = GetSettingFromConfigOrEnvironment(SplunkHecHostSettingName);
+            HecHost = host != null ? new Uri(host) : null;
+            var token = GetSettingFromConfigOrEnvironment(SplunkTokenSettingName);
+            Token = token != null ? new Guid(token) : Token; 
             Host = GetSettingFromConfigOrEnvironment(SplunkHostSettingName);
             Source = GetSettingFromConfigOrEnvironment(SplunkSourceSettingName);
             SourceType = GetSettingFromConfigOrEnvironment(SplunkSourceTypeSettingName);
@@ -71,8 +74,10 @@ namespace WebJobs.Extensions.Splunks
             {
                 throw new ArgumentNullException("context");
             }
-            var converterManager = context.Config.GetService<IConverterManager>();
-            var provider = new SplunkAttributeBindingProvider(converterManager, this);
+            var cm = context.Config.GetService<IConverterManager>();
+            cm.AddConverter<object, SplunkEvent>(ConvertObject2SplunkEvent);
+            cm.AddConverter<string, SplunkEvent>(ConvertString2SplunkEvent);
+            var provider = new SplunkAttributeBindingProvider(cm, this);
             context.Config.RegisterBindingExtension(provider);
         }
 
@@ -86,6 +91,24 @@ namespace WebJobs.Extensions.Splunks
             }
 
             return value;
+        }
+
+        private static SplunkEvent ConvertObject2SplunkEvent(object input)
+        {
+            var splunkEvent = new SplunkEvent
+            {
+                Event = input
+            };
+            return splunkEvent;
+        }
+
+        private static SplunkEvent ConvertString2SplunkEvent(string input)
+        {
+            var splunkEvent = new SplunkEvent
+            {
+                Event = input
+            };
+            return splunkEvent;
         }
     }
 }
