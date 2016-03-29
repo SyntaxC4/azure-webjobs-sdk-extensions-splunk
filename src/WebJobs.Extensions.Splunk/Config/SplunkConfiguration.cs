@@ -7,6 +7,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host.Config;
 using WebJobs.Extensions.Splunk;
 using WebJobs.Extensions.Splunk.Services;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace WebJobs.Extensions.Splunk
 {
@@ -77,6 +79,7 @@ namespace WebJobs.Extensions.Splunk
             var cm = context.Config.GetService<IConverterManager>();
             cm.AddConverter<object, SplunkEvent>(ConvertObject2SplunkEvent);
             cm.AddConverter<string, SplunkEvent>(ConvertString2SplunkEvent);
+            cm.AddConverter<Stream, SplunkEvent>(ConvertStream2SplunkEvent);
             var provider = new SplunkAttributeBindingProvider(cm, this);
             context.Config.RegisterBindingExtension(provider);
         }
@@ -109,6 +112,18 @@ namespace WebJobs.Extensions.Splunk
                 Event = input
             };
             return splunkEvent;
+        }
+
+        private static SplunkEvent ConvertStream2SplunkEvent(Stream input)
+        {
+            using (var reader = new StreamReader(input))
+            {
+                var splunkEvent = new SplunkEvent
+                {
+                    Event = reader.ReadToEnd()
+                };
+                return splunkEvent;
+            }
         }
     }
 }

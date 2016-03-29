@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using WebJobs.Extensions.Splunk;
 using WebJobs.Extensions.Splunk.Services;
+using System.IO;
 
 namespace ExtensionsSample.Samples
 {
     public static class SplunkSamples
     {
+        /*
         public static void SendStringEventExplicit(
             [TimerTrigger("0:01")] TimerInfo timer,
             [SplunkHttpEventCollector] out SplunkEvent splunkEvent)
@@ -48,6 +50,17 @@ namespace ExtensionsSample.Samples
             [SplunkHttpEventCollector] out object splunkEvent)
         {
             splunkEvent = new { Message = "Hello from a Webjob (Implicit)" };
+        }
+        */
+
+        public static void SendStreamObjectImplict(
+            [TimerTrigger("0:01")] TimerInfo timer,
+            [SplunkHttpEventCollector] out Stream splunkEvent)
+        {
+            var message = "Hello from a Webjob (Implicit Stream)";
+            var bytes = Encoding.ASCII.GetBytes(message);            
+            var ms = new MemoryStream(bytes);
+            splunkEvent = ms;
         }
     }
 }
