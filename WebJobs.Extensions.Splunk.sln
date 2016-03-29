@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebJobs.Extensions.Splunk", "src\WebJobs.Extensions.Splunk\WebJobs.Extensions.Splunk.csproj", "{31C38FF6-B849-4031-BBF5-99EB589B7717}"
 EndProject
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{0A950E
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionsSample", "src\ExtensionsSample\ExtensionsSample.csproj", "{1CFEAA1A-F726-482E-ACD1-96D21DB10837}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,11 +25,16 @@ Global
 		{31C38FF6-B849-4031-BBF5-99EB589B7717}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31C38FF6-B849-4031-BBF5-99EB589B7717}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31C38FF6-B849-4031-BBF5-99EB589B7717}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CFEAA1A-F726-482E-ACD1-96D21DB10837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CFEAA1A-F726-482E-ACD1-96D21DB10837}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CFEAA1A-F726-482E-ACD1-96D21DB10837}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CFEAA1A-F726-482E-ACD1-96D21DB10837}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{31C38FF6-B849-4031-BBF5-99EB589B7717} = {708C41CE-F729-410C-B741-1A7133BD60C1}
+		{1CFEAA1A-F726-482E-ACD1-96D21DB10837} = {708C41CE-F729-410C-B741-1A7133BD60C1}
 	EndGlobalSection
 EndGlobal

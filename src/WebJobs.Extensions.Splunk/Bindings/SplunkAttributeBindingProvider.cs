@@ -49,7 +49,7 @@ namespace WebJobs.Extensions.Splunk
             }
 
             ParameterInfo parameter = context.Parameter;
-            var attribute = parameter.GetCustomAttribute<SplunkAttribute>(inherit: false);
+            var attribute = parameter.GetCustomAttribute<SplunkHttpEventCollectorAttribute>(inherit: false);
             if (attribute == null)
             {
                 return Task.FromResult<IBinding>(null);

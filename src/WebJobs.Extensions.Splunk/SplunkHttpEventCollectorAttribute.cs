@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace WebJobs.Extensions.Splunk
 {
     [AttributeUsage(AttributeTargets.Parameter)]
-    public class SplunkAttribute : Attribute
+    public class SplunkHttpEventCollectorAttribute : Attribute
     {
         /// <summary>
         /// Host which will be assigned to each event
