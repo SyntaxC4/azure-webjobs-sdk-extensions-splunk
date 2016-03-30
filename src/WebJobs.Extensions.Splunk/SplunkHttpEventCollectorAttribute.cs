@@ -20,9 +20,9 @@ namespace WebJobs.Extensions.Splunk
         public string Source { get; set; }
 
         /// <summary>
-        /// Sourcetype which will be assigned to each event
+        /// SourceType which will be assigned to each event
         /// </summary>
-        public string Sourcetype { get; set; }
+        public string SourceType { get; set; }
 
         /// <summary>
         /// Index where each event will be stored

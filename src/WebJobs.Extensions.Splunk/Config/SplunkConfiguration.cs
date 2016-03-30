@@ -60,7 +60,7 @@ namespace WebJobs.Extensions.Splunk
         public string Source { get; set; }
 
         /// <summary>
-        /// Sourcetype which will be assigned to each event
+        /// SourceType which will be assigned to each event
         /// </summary>
         public string SourceType { get; set; }
 
