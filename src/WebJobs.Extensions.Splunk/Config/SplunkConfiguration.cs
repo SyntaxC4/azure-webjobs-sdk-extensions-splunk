@@ -9,6 +9,8 @@ using WebJobs.Extensions.Splunk;
 using WebJobs.Extensions.Splunk.Services;
 using System.IO;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace WebJobs.Extensions.Splunk
 {
@@ -23,6 +25,15 @@ namespace WebJobs.Extensions.Splunk
         internal const string SplunkSourceSettingName = "AzureWebJobsSplunkSource";
         internal const string SplunkSourceTypeSettingName = "AzureWebJobsSplunkSourceType";
         internal const string SplunkIndexSettingName = "AzureWebJobsSplunkIndex";
+
+        private static JsonSerializer _serializer;
+
+        static SplunkConfiguration()
+        {
+            _serializer = new JsonSerializer();
+            _serializer.NullValueHandling = NullValueHandling.Ignore;
+            _serializer.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        }
 
         /// <summary>
         /// Constructs a new instance.
@@ -107,11 +118,22 @@ namespace WebJobs.Extensions.Splunk
 
         private static SplunkEvent ConvertString2SplunkEvent(string input)
         {
-            var splunkEvent = new SplunkEvent
+            using(var sr= new StringReader(input))
             {
-                Event = input
-            };
-            return splunkEvent;
+                var jr = new JsonTextReader(sr);
+                var splunkEvent = new SplunkEvent();
+
+                try
+                {
+                    var obj = _serializer.Deserialize(jr);
+                    splunkEvent.Event = obj;
+                }
+                catch
+                {
+                    splunkEvent.Event = input;
+                }
+                return splunkEvent;
+            }
         }
 
         private static SplunkEvent ConvertStream2SplunkEvent(Stream input)
