@@ -1,13 +1,17 @@
-using System;
-using Newtonsoft.Json;
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace WebJobs.Extensions.Splunk.Services
 {
+    using System;
+    using Newtonsoft.Json;
+
     public class SplunkEvent
     {
+        internal const string AzureWebJobsSplunkHostNameName = "AzureWebJobsSplunkHostName";
+
         public SplunkEvent()
         {
-            Timestamp = DateTime.Now;
+            Timestamp = DateTime.UtcNow;
         }
 
         [JsonIgnore]
@@ -17,7 +21,7 @@ namespace WebJobs.Extensions.Splunk.Services
         {
             get
             {
-                double epochTime = (Timestamp.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds;
+                double epochTime = (Timestamp - new DateTime(1970, 1, 1)).TotalSeconds;
                 return epochTime; // truncate to 3 digits after floating point
             }
         }

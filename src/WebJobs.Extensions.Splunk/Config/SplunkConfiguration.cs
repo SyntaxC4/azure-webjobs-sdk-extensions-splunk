@@ -1,23 +1,14 @@
-﻿// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-
-using System;
-using System.Configuration;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host.Config;
-using WebJobs.Extensions.Splunk;
-using WebJobs.Extensions.Splunk.Services;
-using System.IO;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace WebJobs.Extensions.Splunk
 {
+    using System;
+    using Microsoft.Azure.WebJobs;
+
     /// <summary>
     /// Defines the configuration options for the Splunk binding.
     /// </summary>
-    public class SplunkConfiguration : IExtensionConfigProvider
+    public class SplunkConfiguration
     {
         internal const string SplunkHecHostSettingName = "AzureWebJobsSplunkHttpEventCollectorHost";
         internal const string SplunkTokenSettingName = "AzureWebJobsSplunkToken";
@@ -26,28 +17,19 @@ namespace WebJobs.Extensions.Splunk
         internal const string SplunkSourceTypeSettingName = "AzureWebJobsSplunkSourceType";
         internal const string SplunkIndexSettingName = "AzureWebJobsSplunkIndex";
 
-        private static JsonSerializer _serializer;
-
-        static SplunkConfiguration()
-        {
-            _serializer = new JsonSerializer();
-            _serializer.NullValueHandling = NullValueHandling.Ignore;
-            _serializer.ContractResolver = new CamelCasePropertyNamesContractResolver();
-        }
-
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
         public SplunkConfiguration()
         {
-            var host = GetSettingFromConfigOrEnvironment(SplunkHecHostSettingName);
-            HecHost = host != null ? new Uri(host) : null;
-            var token = GetSettingFromConfigOrEnvironment(SplunkTokenSettingName);
-            Token = token != null ? new Guid(token) : Token; 
-            Host = GetSettingFromConfigOrEnvironment(SplunkHostSettingName);
-            Source = GetSettingFromConfigOrEnvironment(SplunkSourceSettingName);
-            SourceType = GetSettingFromConfigOrEnvironment(SplunkSourceTypeSettingName);
-            Index = GetSettingFromConfigOrEnvironment(SplunkIndexSettingName);
+            var nameResolver = new DefaultNameResolver();
+
+            HecHost = new Uri((nameResolver.Resolve(SplunkHecHostSettingName) ?? "https://localhost:8088"));
+            Token = new Guid(nameResolver.Resolve(SplunkTokenSettingName) ?? Guid.NewGuid().ToString());
+            Host = nameResolver.Resolve(SplunkHostSettingName);
+            Source = nameResolver.Resolve(SplunkSourceSettingName);
+            SourceType = nameResolver.Resolve(SplunkSourceTypeSettingName);
+            Index = nameResolver.Resolve(SplunkIndexSettingName);
         }
 
         /// <summary>
@@ -79,73 +61,5 @@ namespace WebJobs.Extensions.Splunk
         /// Index where each event will be stored
         /// </summary>
         public string Index { get; set; }
-
-        /// <inheritdoc />
-        public void Initialize(ExtensionConfigContext context)
-        {
-            if (context == null)
-            {
-                throw new ArgumentNullException("context");
-            }
-            var cm = context.Config.GetService<IConverterManager>();
-            cm.AddConverter<object, SplunkEvent>(ConvertObject2SplunkEvent);
-            cm.AddConverter<string, SplunkEvent>(ConvertString2SplunkEvent);
-            cm.AddConverter<Stream, SplunkEvent>(ConvertStream2SplunkEvent);
-            var provider = new SplunkAttributeBindingProvider(cm, this);
-            context.Config.RegisterBindingExtension(provider);
-        }
-
-        internal static string GetSettingFromConfigOrEnvironment(string key)
-        {
-            var value = ConfigurationManager.AppSettings[key];
-
-            if (string.IsNullOrEmpty(value))
-            {
-                value = Environment.GetEnvironmentVariable(key);
-            }
-
-            return value;
-        }
-
-        private static SplunkEvent ConvertObject2SplunkEvent(object input)
-        {
-            var splunkEvent = new SplunkEvent
-            {
-                Event = input
-            };
-            return splunkEvent;
-        }
-
-        private static SplunkEvent ConvertString2SplunkEvent(string input)
-        {
-            using(var sr= new StringReader(input))
-            {
-                var jr = new JsonTextReader(sr);
-                var splunkEvent = new SplunkEvent();
-
-                try
-                {
-                    var obj = _serializer.Deserialize(jr);
-                    splunkEvent.Event = obj;
-                }
-                catch
-                {
-                    splunkEvent.Event = input;
-                }
-                return splunkEvent;
-            }
-        }
-
-        private static SplunkEvent ConvertStream2SplunkEvent(Stream input)
-        {
-            using (var reader = new StreamReader(input))
-            {
-                var splunkEvent = new SplunkEvent
-                {
-                    Event = reader.ReadToEnd()
-                };
-                return splunkEvent;
-            }
-        }
     }
 }

@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.IO;
+﻿// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace WebJobs.Extensions.Splunk.Services
 {
+    using System;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
+    using System.IO;
+    using Newtonsoft.Json.Linq;
     internal class SplunkEventService : ISplunkEventService
     {
         private readonly SplunkConfiguration _config;
@@ -56,5 +55,22 @@ namespace WebJobs.Extensions.Splunk.Services
             return _client;
         }
 
+        internal static SplunkConfiguration CreateConfiguration(JObject metadata)
+        {
+            SplunkConfiguration splunkConfig = new SplunkConfiguration();
+
+            splunkConfig = JsonConvert.DeserializeObject<SplunkConfiguration>((string)metadata);
+
+            return splunkConfig;
+        }
+
+        internal static SplunkEvent JsonToEventConverter(JObject input)
+        {
+            SplunkEvent envelope = new SplunkEvent();
+
+            envelope = JsonConvert.DeserializeObject<SplunkEvent>((string)input);
+
+            return envelope;
+        }
     }
 }

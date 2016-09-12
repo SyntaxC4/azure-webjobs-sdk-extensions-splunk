@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using WebJobs.Extensions.Splunk.Services;
+using System;
 
 namespace WebJobs.Extensions.Splunk
 {
@@ -18,12 +15,17 @@ namespace WebJobs.Extensions.Splunk
             _eventService = eventService;
         }
 
-        public async Task AddAsync(SplunkEvent item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task AddAsync(SplunkEvent item, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if(item == null)
+            {
+                throw new ArgumentException("item");
+            }
+
             await _eventService.SendEventAsync(item);
         }
 
-        public Task FlushAsync(CancellationToken cancellationToken = new CancellationToken())
+        public Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(0);
         }
